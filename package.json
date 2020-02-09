@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "webpack:dev": "npx webpack --config webpack.config.js",
+    "webpack:prod": "npx webpack --config webpack.config.js --mode production"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,25 @@
   "bugs": {
     "url": "https://github.com/mishavetl/search-box/issues"
   },
-  "homepage": "https://github.com/mishavetl/search-box#readme"
+  "homepage": "https://github.com/mishavetl/search-box#readme",
+  "dependencies": {
+    "normalize-scss": "^7.0.1",
+    "normalize.css": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.149",
+    "axios": "^0.19.2",
+    "css-loader": "^3.4.2",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.13.1",
+    "sass-loader": "^8.0.2",
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^1.1.3",
+    "ts-loader": "^6.2.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
 }

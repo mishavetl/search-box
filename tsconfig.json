@@ -2,7 +2,13 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
+        "lib": [
+            "es2015",
+            "dom"
+        ],
         "declaration": true,
+        "sourceMap": true,
+        "importHelpers": true,
         "outDir": "./dist"
     },
     "include": [

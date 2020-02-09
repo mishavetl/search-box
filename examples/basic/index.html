@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Search Box Example</title>
+    <link href="../../dist/main.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="station">Station</label>
+    <input id="station" name="station" value="" />
+
+    <script src="../../dist/bundle.js"></script>
+    <script>
+        const stationSearchBox = new SearchBox.SearchBox()
+            .setUrl('http://quietvox.local/select2/station')
+            .setTermProperty('station')
+            .bindToInput(document.querySelector('#station'));
+    </script>
+</body>
+</html>
