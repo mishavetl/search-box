@@ -8,7 +8,6 @@ export class ElementController {
     private readonly originalInputElement: HTMLInputElement;
 
     private rootElement: HTMLDivElement;
-    private rootTemplateElement: HTMLDivElement;
     private termInputElement: HTMLInputElement;
     private resultsElement: HTMLInputElement;
 
@@ -19,7 +18,7 @@ export class ElementController {
     private focusOutEvent;
     private changeEvent;
     private resultPickEvent;
-    private resultElementsEvents: [HTMLElement, EventListener][];
+    private resultElementsEvents: [HTMLElement, EventListener][] = [];
 
     private debouncedUpdateResults = debounce( () => this.updateResults(this.termInputElement.value), 500);
 
@@ -41,7 +40,7 @@ export class ElementController {
         insertAfter(this.rootElement, this.originalInputElement);
         this.termInputElement = this.rootElement.querySelector('.search-box-term-input');
         this.resultsElement = this.rootElement.querySelector('.search-box-results');
-        this.rootTemplateElement = this.rootElement.querySelector('.search-box-root');
+        this.rootElement.classList.add('search-box-root');
     }
 
     private removeTemplate(): void {
@@ -53,15 +52,19 @@ export class ElementController {
         this.termInputElement.placeholder = this.termInputElement.value;
         this.termInputElement.value = '';
         this.onTermInputChangeElement();
-        this.rootTemplateElement.classList.toggle('picking');
+        this.rootElement.classList.add('picking');
     }
 
-    private onTermInputElementFocusOut(): void {
+    private onTermInputElementFocusOut(event: FocusEvent): void {
+        if (this.rootElement.querySelectorAll(':hover').length > 0) {
+            event.preventDefault();
+            return;
+        }
         if (this.termInputElement.value === '') {
             this.termInputElement.value = this.termInputElement.placeholder;
             this.termInputElement.placeholder = '';
         }
-        this.rootTemplateElement.classList.toggle('picking');
+        this.rootElement.classList.remove('picking');
     }
 
     private async updateResults(term: string) {
@@ -72,8 +75,12 @@ export class ElementController {
             );
         }).join('');
         this.removeResultsEvents();
-        this.resultsElement.innerHTML = resultsHtml;
-        this.addResultsEvents();
+        if (resultsHtml === '') {
+            this.resultsElement.innerHTML = this.templateManager.getEmptyResultItem();
+        } else {
+            this.resultsElement.innerHTML = resultsHtml;
+            this.addResultsEvents();
+        }
     }
 
     private onTermInputChangeElement() {
@@ -81,22 +88,25 @@ export class ElementController {
             this.updateResults(this.termInputElement.value);
             return;
         }
+        this.removeResultsEvents();
+        this.resultsElement.innerHTML = this.templateManager.getSpinner();
         this.debouncedUpdateResults();
     }
 
     private onResultElementClick(event: Event): void {
         const resultElement: HTMLElement = <HTMLElement> event.target;
         const id = resultElement.getAttribute('data-id');
-        this.originalInputElement.value = id;
+        this.originalInputElement.setAttribute('value', id);
         this.termInputElement.setAttribute('data-id', id);
         this.termInputElement.value = resultElement.getAttribute('data-value');
+        this.rootElement.classList.remove('picking');
     }
 
     private addResultsEvents() {
+
         this.resultElementsEvents = map(this.resultsElement.querySelectorAll('.search-box-result'), (element: HTMLElement) => {
-            const callback = (event) => this.resultPickEvent(event);
-            element.addEventListener('click', callback);
-            return [element, callback];
+            element.addEventListener('click', this.resultPickEvent);
+            return [element, this.resultPickEvent];
         });
     }
 
@@ -105,11 +115,12 @@ export class ElementController {
             const [element, callback] = elementEventTuple;
             element.removeEventListener('click', callback);
         });
+        this.resultElementsEvents = [];
     }
 
     private addEvents(): void {
         this.focusInEvent = () => this.onTermInputElementFocusIn();
-        this.focusOutEvent = () => this.onTermInputElementFocusOut();
+        this.focusOutEvent = (event) => this.onTermInputElementFocusOut(event);
         this.changeEvent = () => this.onTermInputChangeElement();
         this.resultPickEvent = (event) => this.onResultElementClick(event);
         this.termInputElement.addEventListener('focusin', this.focusInEvent);
@@ -118,10 +129,10 @@ export class ElementController {
     }
 
     private removeEvents(): void {
+        this.removeResultsEvents();
         this.termInputElement.removeEventListener('focusin', this.focusInEvent);
         this.termInputElement.removeEventListener('focusout', this.focusOutEvent);
         this.termInputElement.removeEventListener('input', this.changeEvent);
-        this.termInputElement.removeEventListener('click', this.resultPickEvent);
     }
 
     public unbind(): void {

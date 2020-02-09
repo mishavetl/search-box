@@ -3,10 +3,12 @@ import { TemplateManager } from './template-manager'
 export class DefaultTemplateManager implements TemplateManager {
     getRootTemplate(): string {
         return `
-            <div class="search-box-root">
+            <div class="search-box-term-input-container">
                 <input class="search-box-term-input" />
-                <ul class="search-box-results"></ul>
+                <div class="search-box-arrow-up">&#8963;</div>
+                <div class="search-box-arrow-down">&#8964;</div>
             </div>
+            <ul class="search-box-results"></ul>
         `;
     }
 
@@ -16,5 +18,13 @@ export class DefaultTemplateManager implements TemplateManager {
                ${title} 
             </li>
         `;
+    }
+
+    getSpinner(): string {
+        return `<div class="loader">Loading...</div>`;
+    }
+
+    getEmptyResultItem(): string {
+        return '<li class="search-box-empty-item">No entries found</li>'
     }
 }

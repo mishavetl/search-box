@@ -1,0 +1,43 @@
+.search-box-term-input {
+  border: solid 1px lightgrey;
+  padding: 5px;
+  border-radius: 5px;
+  width: 158px;
+}
+
+.search-box-term-input-container {
+  position: relative;
+}
+
+.search-box-arrow-up, .search-box-arrow-down {
+  position: absolute;
+  right: 5px;
+}
+
+
+.search-box-arrow-down {
+  display: inline-block;
+  top: 5px;
+}
+
+.search-box-arrow-up {
+  display: none;
+  top: 12px;
+}
+
+.search-box-root.picking {
+  .search-box-term-input {
+    border: solid 1px darken(lightgrey, 20);
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    outline: none;
+  }
+
+  .search-box-arrow-down {
+    display: none;
+  }
+
+  .search-box-arrow-up {
+    display: inline-block;
+  }
+}

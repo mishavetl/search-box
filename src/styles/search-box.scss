@@ -1,1 +1,9 @@
 @import '~normalize.css/normalize';
+
+@import 'spinner';
+@import 'search-box-results';
+@import 'search-box-input';
+
+.search-box-root {
+  display: inline-block;
+}
