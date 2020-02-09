@@ -111,13 +111,11 @@ export class ElementController {
     }
 
     private onResultsElementScroll(): void {
-        console.log(this.resultsElement.scrollTop, this.resultsElement.scrollTop + this.resultsElement.offsetHeight);
         if (this.resultsElement.scrollTop + this.resultsElement.offsetHeight >= this.resultsElement.scrollHeight) {
             if (this.dataProvider.more) {
                 ++this.dataProvider.page;
                 this.dataProvider.more = false;
                 this.updateResults(this.termInputElement.value, true);
-                console.log(this.dataProvider.page);
             }
         }
     }
