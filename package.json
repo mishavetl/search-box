@@ -1,0 +1,27 @@
+{
+  "name": "search-box",
+  "version": "1.0.0",
+  "description": "TypeScript Search Box for a data stored on a server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mishavetl/search-box.git"
+  },
+  "keywords": [
+    "search",
+    "box",
+    "typescript",
+    "select2",
+    "web"
+  ],
+  "author": "Michael Vietluzhskykh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mishavetl/search-box/issues"
+  },
+  "homepage": "https://github.com/mishavetl/search-box#readme"
+}
