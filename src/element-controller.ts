@@ -1,7 +1,7 @@
 import { DataProvider } from './data-provider'
 import { TemplateManager } from './template-manager'
 import { insertAfter } from './dom-utils'
-import { debounce, map, has, each } from 'lodash'
+import { debounce, map, each } from 'lodash'
 
 export class ElementController {
     private originalInputDefaultHiddenAttribute: boolean;
@@ -18,6 +18,7 @@ export class ElementController {
     private focusOutEvent;
     private changeEvent;
     private resultPickEvent;
+    private scrollEvent;
     private resultElementsEvents: [HTMLElement, EventListener][] = [];
 
     private debouncedUpdateResults = debounce( () => this.updateResults(this.termInputElement.value), 500);
@@ -67,7 +68,10 @@ export class ElementController {
         this.rootElement.classList.remove('picking');
     }
 
-    private async updateResults(term: string) {
+    private async updateResults(term: string, merge= false) {
+        if (!merge) {
+            this.dataProvider.page = 1;
+        }
         const results: object[] = await this.dataProvider.getResults(term);
         const resultsHtml: string = map(results, (result) => {
             return this.templateManager.getResultItemTemplate(
@@ -78,13 +82,17 @@ export class ElementController {
         if (resultsHtml === '') {
             this.resultsElement.innerHTML = this.templateManager.getEmptyResultItem();
         } else {
-            this.resultsElement.innerHTML = resultsHtml;
+            if (merge) {
+                this.resultsElement.innerHTML += resultsHtml;
+            } else {
+                this.resultsElement.innerHTML = resultsHtml;
+            }
             this.addResultsEvents();
         }
     }
 
     private onTermInputChangeElement() {
-        if (has(this.dataProvider.data, this.termInputElement.value)) {
+        if (this.dataProvider.data.has(this.termInputElement.value + '\n' + this.dataProvider.page)) {
             this.updateResults(this.termInputElement.value);
             return;
         }
@@ -102,8 +110,19 @@ export class ElementController {
         this.rootElement.classList.remove('picking');
     }
 
-    private addResultsEvents() {
+    private onResultsElementScroll(): void {
+        console.log(this.resultsElement.scrollTop, this.resultsElement.scrollTop + this.resultsElement.offsetHeight);
+        if (this.resultsElement.scrollTop + this.resultsElement.offsetHeight >= this.resultsElement.scrollHeight) {
+            if (this.dataProvider.more) {
+                ++this.dataProvider.page;
+                this.dataProvider.more = false;
+                this.updateResults(this.termInputElement.value, true);
+                console.log(this.dataProvider.page);
+            }
+        }
+    }
 
+    private addResultsEvents() {
         this.resultElementsEvents = map(this.resultsElement.querySelectorAll('.search-box-result'), (element: HTMLElement) => {
             element.addEventListener('click', this.resultPickEvent);
             return [element, this.resultPickEvent];
@@ -123,9 +142,11 @@ export class ElementController {
         this.focusOutEvent = (event) => this.onTermInputElementFocusOut(event);
         this.changeEvent = () => this.onTermInputChangeElement();
         this.resultPickEvent = (event) => this.onResultElementClick(event);
+        this.scrollEvent = () => this.onResultsElementScroll();
         this.termInputElement.addEventListener('focusin', this.focusInEvent);
         this.termInputElement.addEventListener('focusout', this.focusOutEvent);
         this.termInputElement.addEventListener('input', this.changeEvent);
+        this.resultsElement.addEventListener('scroll', this.scrollEvent);
     }
 
     private removeEvents(): void {
@@ -133,6 +154,7 @@ export class ElementController {
         this.termInputElement.removeEventListener('focusin', this.focusInEvent);
         this.termInputElement.removeEventListener('focusout', this.focusOutEvent);
         this.termInputElement.removeEventListener('input', this.changeEvent);
+        this.resultsElement.removeEventListener('scroll', this.scrollEvent);
     }
 
     public unbind(): void {

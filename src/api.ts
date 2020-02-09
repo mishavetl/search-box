@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import { ApiResponse } from './apiResponse'
+import { ApiResponse } from './api-response'
 
 export class Api {
     private api: AxiosInstance;
