@@ -2,7 +2,7 @@
   "name": "search-box",
   "version": "1.0.0",
   "description": "TypeScript Search Box for a data stored on a server",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "webpack:dev": "npx webpack --config webpack.config.js",
@@ -28,12 +28,12 @@
   "dependencies": {
     "lodash-es": "^4.17.15",
     "normalize-scss": "^7.0.1",
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "axios": "^0.19.2",
+    "@types/lodash": "^4.14.149",
+    "@types/lodash-es": "^4.17.3"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.149",
-    "@types/lodash-es": "^4.17.3",
-    "axios": "^0.19.2",
     "css-loader": "^3.4.2",
     "extract-text-webpack-plugin": "^3.0.2",
     "mini-css-extract-plugin": "^0.9.0",
