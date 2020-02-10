@@ -36,4 +36,18 @@ export class DataProvider {
             });
         });
     }
+
+    getTitle(id: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.api.getTitle(id).then((response) => {
+                if (typeof response.data.reason !== 'undefined') {
+                    reject(response.data.reason);
+                    return;
+                }
+                resolve(response.data[this.termProperty]);
+            }).catch(reason => {
+                reject(reason);
+            });
+        });
+    }
 }

@@ -28,4 +28,9 @@ export class SearchBox {
         this.elementController = new ElementController(this.dataProvider, new DefaultTemplateManager(), originalElement);
         return this;
     }
+
+    public unbind(): this {
+        this.elementController.unbind();
+        return this;
+    }
 }

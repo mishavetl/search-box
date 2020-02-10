@@ -26,11 +26,13 @@
   },
   "homepage": "https://github.com/mishavetl/search-box#readme",
   "dependencies": {
+    "lodash-es": "^4.17.15",
     "normalize-scss": "^7.0.1",
     "normalize.css": "^8.0.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
+    "@types/lodash-es": "^4.17.3",
     "axios": "^0.19.2",
     "css-loader": "^3.4.2",
     "extract-text-webpack-plugin": "^3.0.2",

@@ -1,7 +1,9 @@
 import { DataProvider } from './data-provider'
 import { TemplateManager } from './template-manager'
 import { insertAfter } from './dom-utils'
-import { debounce, map, each } from 'lodash'
+import debounce from 'lodash/debounce'
+import map from 'lodash/map'
+import each from 'lodash/each'
 
 export class ElementController {
     private originalInputDefaultHiddenAttribute: boolean;
@@ -19,9 +21,12 @@ export class ElementController {
     private changeEvent;
     private resultPickEvent;
     private scrollEvent;
+    private arrowFocusEvent;
+    private clearEvent;
+
     private resultElementsEvents: [HTMLElement, EventListener][] = [];
 
-    private debouncedUpdateResults = debounce( () => this.updateResults(this.termInputElement.value), 500);
+    private debouncedUpdateResults;
 
     public constructor(
         dataProvider: DataProvider, templateManager: TemplateManager, originalInputElement: HTMLInputElement
@@ -31,6 +36,14 @@ export class ElementController {
         this.originalInputElement = originalInputElement;
         this.addTemplate();
         this.addEvents();
+        this.initializeValue();
+    }
+
+    private async initializeValue() {
+        if (this.originalInputElement.value != null) {
+            this.termInputElement.value = await this.dataProvider.getTitle(this.originalInputElement.value);
+            this.rootElement.classList.add('picked');
+        }
     }
 
     private addTemplate(): void {
@@ -63,7 +76,7 @@ export class ElementController {
         }
         if (this.termInputElement.value === '') {
             this.termInputElement.value = this.termInputElement.placeholder;
-            this.termInputElement.placeholder = '';
+            this.termInputElement.placeholder = 'Click for options';
         }
         this.rootElement.classList.remove('picking');
     }
@@ -101,13 +114,18 @@ export class ElementController {
         this.debouncedUpdateResults();
     }
 
-    private onResultElementClick(event: Event): void {
-        const resultElement: HTMLElement = <HTMLElement> event.target;
-        const id = resultElement.getAttribute('data-id');
+    private setValue(id: string, value: string): void {
         this.originalInputElement.setAttribute('value', id);
         this.termInputElement.setAttribute('data-id', id);
-        this.termInputElement.value = resultElement.getAttribute('data-value');
+        this.termInputElement.value = value;
+        this.termInputElement.placeholder = 'Click for options';
         this.rootElement.classList.remove('picking');
+    }
+
+    private onResultElementClick(event: Event): void {
+        const resultElement: HTMLElement = <HTMLElement> event.target;
+        this.setValue(resultElement.getAttribute('data-id'), resultElement.getAttribute('data-value'));
+        this.rootElement.classList.add('picked');
     }
 
     private onResultsElementScroll(): void {
@@ -118,6 +136,11 @@ export class ElementController {
                 this.updateResults(this.termInputElement.value, true);
             }
         }
+    }
+
+    private onClearEvent(): void {
+        this.setValue(null, '');
+        this.rootElement.classList.remove('picked');
     }
 
     private addResultsEvents() {
@@ -141,9 +164,16 @@ export class ElementController {
         this.changeEvent = () => this.onTermInputChangeElement();
         this.resultPickEvent = (event) => this.onResultElementClick(event);
         this.scrollEvent = () => this.onResultsElementScroll();
+        this.arrowFocusEvent = () => this.termInputElement.focus();
+        this.clearEvent = () => this.onClearEvent();
+        this.debouncedUpdateResults = debounce( () => this.updateResults(this.termInputElement.value), 500);
+
         this.termInputElement.addEventListener('focusin', this.focusInEvent);
         this.termInputElement.addEventListener('focusout', this.focusOutEvent);
         this.termInputElement.addEventListener('input', this.changeEvent);
+        this.rootElement.querySelector('.search-box-arrow-up').addEventListener('click', this.arrowFocusEvent);
+        this.rootElement.querySelector('.search-box-arrow-down').addEventListener('click', this.arrowFocusEvent);
+        this.rootElement.querySelector('.search-box-clear').addEventListener('click', this.clearEvent);
         this.resultsElement.addEventListener('scroll', this.scrollEvent);
     }
 
@@ -152,6 +182,9 @@ export class ElementController {
         this.termInputElement.removeEventListener('focusin', this.focusInEvent);
         this.termInputElement.removeEventListener('focusout', this.focusOutEvent);
         this.termInputElement.removeEventListener('input', this.changeEvent);
+        this.rootElement.querySelector('.search-box-arrow-up').removeEventListener('click', this.arrowFocusEvent);
+        this.rootElement.querySelector('.search-box-arrow-down').removeEventListener('click', this.arrowFocusEvent);
+        this.rootElement.querySelector('.search-box-clear').removeEventListener('click', this.clearEvent);
         this.resultsElement.removeEventListener('scroll', this.scrollEvent);
     }
 

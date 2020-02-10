@@ -19,4 +19,10 @@ export class Api {
             params: {term, page}
         });
     }
+
+    getTitle(id: string) {
+        return this.api.get('/', {
+            params: {id}
+        });
+    }
 }
