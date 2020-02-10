@@ -40,7 +40,7 @@ export class ElementController {
     }
 
     private async initializeValue() {
-        if (this.originalInputElement.value != null) {
+        if (this.originalInputElement.value != null && this.originalInputElement.value != '') {
             this.termInputElement.value = await this.dataProvider.getTitle(this.originalInputElement.value);
             this.rootElement.classList.add('picked');
         }

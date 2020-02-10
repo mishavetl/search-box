@@ -9,12 +9,22 @@
     <label for="station">Station</label>
     <input id="station" name="station" value="1" />
 
+    <label for="company">Company</label>
+    <input id="company" name="company" value="1" />
+
     <script src="../../dist/bundle.js"></script>
     <script>
         const stationSearchBox = new SearchBox.SearchBox()
-            .setUrl('http://quietvox.local/select2/station')
+            .setUrl('your-url')
             .setTermProperty('station')
             .bindToInput(document.querySelector('#station'));
+    </script>
+
+    <script>
+        const companySearchBox = new SearchBox.SearchBox()
+            .setUrl('your-url')
+            .setTermProperty('name')
+            .bindToInput(document.querySelector('#company'));
     </script>
 </body>
 </html>
