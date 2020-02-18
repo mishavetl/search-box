@@ -26,11 +26,8 @@ export class ElementController {
     private arrowFocusEvent;
     private clearEvent;
 
-    private resultPickEvent;
-    private resultMouseOverEvent;
-
-    private resultElementsMouseOverEvents: [HTMLElement, EventListener][] = [];
-    private resultElementsClickEvents: [HTMLElement, EventListener][] = [];
+    private resultsPickEvent;
+    private resultsMouseOverEvent;
 
     private debouncedUpdateResults;
 
@@ -122,7 +119,6 @@ export class ElementController {
                 index === 0
             );
         }).join('');
-        this.removeResultsEvents();
         if (resultsHtml === '') {
             this.resultsElement.innerHTML = this.templateManager.getEmptyResultItem();
         } else {
@@ -131,7 +127,6 @@ export class ElementController {
             } else {
                 this.resultsElement.innerHTML = resultsHtml;
             }
-            this.addResultsEvents();
         }
         this.rootElement.classList.remove('search-box-root-loading');
     }
@@ -141,14 +136,9 @@ export class ElementController {
             this.updateResults(this.termInputElement.value);
             return;
         }
-        this.removeResultsEvents();
         this.rootElement.classList.add('search-box-root-loading');
         this.resultsElement.innerHTML = this.templateManager.getSpinner();
         this.debouncedUpdateResults();
-    }
-
-    private onTermInputElementKeyDown(evt: KeyboardEvent): void {
-        this.termInputKeyboardHandler.handle(evt);
     }
 
     private setValue(id: string, value: string): void {
@@ -167,13 +157,19 @@ export class ElementController {
         this.termInputElement.blur();
     }
 
-    private onResultElementClick(event: Event): void {
+    private onResultsElementClick(event: Event): void {
         const resultElement: HTMLElement = <HTMLElement> event.target;
+        if (!resultElement.classList.contains('search-box-result')) {
+            return;
+        }
         this.pickElement(resultElement);
     }
 
-    private onResultElementMouseOver(event: Event): void {
+    private onResultsElementMouseOver(event: Event): void {
         const resultElement: HTMLElement = <HTMLElement> event.target;
+        if (!resultElement.classList.contains('search-box-result')) {
+            return;
+        }
         const previouslyHovered = this.resultsElement.querySelector('li.hovered');
         if (previouslyHovered !== null) {
             previouslyHovered.classList.remove('hovered');
@@ -196,29 +192,6 @@ export class ElementController {
         this.rootElement.classList.remove('picked');
     }
 
-    private addResultsEvents(): void {
-        this.resultElementsMouseOverEvents = map(this.resultsElement.querySelectorAll('.search-box-result'), (element: HTMLElement) => {
-            element.addEventListener('mouseover', this.resultMouseOverEvent);
-            return [element, this.resultMouseOverEvent];
-        });
-        this.resultElementsClickEvents = map(this.resultsElement.querySelectorAll('.search-box-result'), (element: HTMLElement) => {
-            element.addEventListener('click', this.resultPickEvent);
-            return [element, this.resultPickEvent];
-        });
-    }
-
-    private removeResultsEvents(): void {
-        each(this.resultElementsMouseOverEvents, (elementEventTuple) => {
-            const [element, callback] = elementEventTuple;
-            element.removeEventListener('mouseover', callback);
-        });
-        each(this.resultElementsClickEvents, (elementEventTuple) => {
-            const [element, callback] = elementEventTuple;
-            element.removeEventListener('click', callback);
-        });
-        this.resultElementsClickEvents = [];
-    }
-
     private addEvents(): void {
         this.focusInEvent = () => this.onTermInputElementFocusIn();
         this.focusOutEvent = (event) => this.onTermInputElementFocusOut(event);
@@ -228,8 +201,11 @@ export class ElementController {
         this.clearEvent = () => this.onClearEvent();
         this.debouncedUpdateResults = debounce( () => this.updateResults(this.termInputElement.value), 300);
 
-        this.resultMouseOverEvent = (event) => this.onResultElementMouseOver(event);
-        this.resultPickEvent = (event) => this.onResultElementClick(event);
+        this.resultsMouseOverEvent = (event) => this.onResultsElementMouseOver(event);
+        this.resultsPickEvent = (event) => this.onResultsElementClick(event);
+
+        this.resultsElement.addEventListener('mouseover', this.resultsMouseOverEvent);
+        this.resultsElement.addEventListener('click', this.resultsPickEvent);
 
         this.termInputElement.addEventListener('focusin', this.focusInEvent);
         this.termInputElement.addEventListener('focusout', this.focusOutEvent);
@@ -241,7 +217,6 @@ export class ElementController {
     }
 
     private removeEvents(): void {
-        this.removeResultsEvents();
         this.termInputElement.removeEventListener('focusin', this.focusInEvent);
         this.termInputElement.removeEventListener('focusout', this.focusOutEvent);
         this.termInputElement.removeEventListener('input', this.changeEvent);
