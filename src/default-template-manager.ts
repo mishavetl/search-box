@@ -13,16 +13,17 @@ export class DefaultTemplateManager implements TemplateManager {
         `;
     }
 
-    getResultItemTemplate(id: string, title: string, term: string): string {
+    getResultItemTemplate(id: string, title: string, term: string, first: boolean): string {
+        const hoveredClass = first ? ' hovered' : '';
         return `
-            <li class="search-box-result" data-id="${id}" data-value="${title}">
+            <li class="search-box-result${hoveredClass}" data-id="${id}" data-value="${title}">
                ${title} 
             </li>
         `;
     }
 
     getSpinner(): string {
-        return `<div class="loader">Loading...</div>`;
+        return `<div class="search-box-loader">Loading...</div>`;
     }
 
     getEmptyResultItem(): string {

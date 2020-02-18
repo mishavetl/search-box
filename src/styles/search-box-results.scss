@@ -1,10 +1,10 @@
 .search-box-root {
-  position: relative;
   .search-box-results {
+    background: white;
     max-height: 0;
     transition: max-height 0s;
 
-    width: 168px;
+    width: 156px;
     overflow-y: auto;
 
     position: absolute;
@@ -34,12 +34,13 @@
     display: block;
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: -1px 0 0;
     border: solid 1px darken(lightgrey, 20);
-    border-top-width: 0;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     color: darken(lightgrey, 60);
+
+    box-shadow: 0 3px 5px 0 lightgrey;
   }
 
   .search-box-result {
@@ -48,7 +49,7 @@
     margin: 0;
   }
 
-  .search-box-result:hover {
+  .search-box-result.hovered {
     cursor: pointer;
     border-left-color: darken(lightgrey, 20);
     color: initial;
@@ -56,5 +57,11 @@
 
   .search-box-empty-item {
     padding: 5px;
+  }
+}
+
+.search-box-root.search-box-root-loading {
+  .search-box-results {
+    overflow-y: hidden;
   }
 }

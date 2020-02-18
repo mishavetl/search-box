@@ -2,3 +2,5 @@ tsconfig.json
 src
 .idea
 examples
+dist/bundle.js.map
+dist/main.css.map

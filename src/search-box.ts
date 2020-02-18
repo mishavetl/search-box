@@ -29,6 +29,14 @@ export class SearchBox {
         return this;
     }
 
+    public open(): void {
+        this.elementController.open();
+    }
+
+    public close(): void {
+        this.elementController.close();
+    }
+
     public unbind(): this {
         this.elementController.unbind();
         return this;

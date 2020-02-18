@@ -1,5 +1,5 @@
 {
-  "name": "search-box",
+  "name": "@mishavetl/search-box",
   "version": "1.0.0",
   "description": "TypeScript Search Box for a data stored on a server",
   "main": "dist/bundle.js",

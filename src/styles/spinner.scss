@@ -1,13 +1,13 @@
-.loader,
-.loader:before,
-.loader:after {
+.search-box-loader,
+.search-box-loader:before,
+.search-box-loader:after {
     background: darken(lightgrey, 20);
     -webkit-animation: load1 1s infinite ease-in-out;
     animation: load1 1s infinite ease-in-out;
     width: 1em;
     height: 4em;
 }
-.loader {
+.search-box-loader {
     color: darken(lightgrey, 20);
     text-indent: -9999em;
     margin: 88px auto;
@@ -19,18 +19,18 @@
     -webkit-animation-delay: -0.16s;
     animation-delay: -0.16s;
 }
-.loader:before,
-.loader:after {
+.search-box-loader:before,
+.search-box-loader:after {
     position: absolute;
     top: 0;
     content: '';
 }
-.loader:before {
+.search-box-loader:before {
     left: -1.5em;
     -webkit-animation-delay: -0.32s;
     animation-delay: -0.32s;
 }
-.loader:after {
+.search-box-loader:after {
     left: 1.5em;
 }
 @-webkit-keyframes load1 {
