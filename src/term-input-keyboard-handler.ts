@@ -1,4 +1,5 @@
-import { last, each } from 'lodash';
+import last from 'lodash/last';
+import each from 'lodash/each';
 import { scrollToElement } from './dom-utils';
 
 

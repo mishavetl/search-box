@@ -4,7 +4,7 @@ export class DefaultTemplateManager implements TemplateManager {
     getRootTemplate(): string {
         return `
             <div class="search-box-term-input-container">
-                <input class="search-box-term-input" placeholder="Click for options" />
+                <input class="search-box-term-input" placeholder="Click for options\n" />
                 <div class="search-box-arrow-up">&#8963;</div>
                 <div class="search-box-arrow-down">&#8964;</div>
                 <div class="search-box-clear">&#10005;</div>

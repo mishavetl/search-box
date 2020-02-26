@@ -3,7 +3,6 @@ import { TemplateManager } from './template-manager'
 import { insertAfter } from './dom-utils'
 import debounce from 'lodash/debounce'
 import map from 'lodash/map'
-import each from 'lodash/each'
 import { TermInputKeyboardHandler } from './term-input-keyboard-handler';
 
 export class ElementController {
@@ -76,8 +75,8 @@ export class ElementController {
     public open(): void {
         this.termInputElement.focus();
 
-        if (this.termInputElement.value == '' ||
-            this.originalInputElement.getAttribute('data-value') == this.termInputElement.value
+        if (this.originalInputElement.getAttribute('data-value') === this.termInputElement.value
+            || this.termInputElement.placeholder === 'Click for options\n'
         ) {
             this.termInputElement.placeholder = this.termInputElement.value;
             this.termInputElement.value = '';
@@ -87,9 +86,9 @@ export class ElementController {
     }
 
     public close(): void {
-        if (this.termInputElement.value === '') {
+        if (this.termInputElement.value === '' && this.termInputElement.placeholder !== 'Click for options\n') {
             this.termInputElement.value = this.termInputElement.placeholder;
-            this.termInputElement.placeholder = 'Click for options';
+            this.termInputElement.placeholder = 'Click for options\n';
         }
         this.rootElement.classList.remove('picking');
     }
@@ -147,14 +146,16 @@ export class ElementController {
         this.originalInputElement.dispatchEvent(new Event('value-set'));
         this.termInputElement.setAttribute('data-id', id);
         this.termInputElement.value = value;
-        this.termInputElement.placeholder = 'Click for options';
+        this.termInputElement.placeholder = 'Click for options\n';
         this.rootElement.classList.remove('picking');
     }
 
     private pickElement(resultElement: HTMLElement): void {
-        this.setValue(resultElement.getAttribute('data-id'), resultElement.getAttribute('data-value'));
-        this.rootElement.classList.add('picked');
-        this.termInputElement.blur();
+        if (resultElement !== null) {
+            this.setValue(resultElement.getAttribute('data-id'), resultElement.getAttribute('data-value'));
+            this.rootElement.classList.add('picked');
+            this.termInputElement.blur();
+        }
     }
 
     private onResultsElementClick(event: Event): void {
@@ -187,9 +188,10 @@ export class ElementController {
         }
     }
 
-    private onClearEvent(): void {
+    private onClearEvent(evt: Event): void {
         this.setValue('', '');
         this.rootElement.classList.remove('picked');
+        evt.stopPropagation();
     }
 
     private addEvents(): void {
@@ -198,7 +200,7 @@ export class ElementController {
         this.changeEvent = (event) => this.onTermInputElementChange(event);
         this.scrollEvent = () => this.onResultsElementScroll();
         this.arrowFocusEvent = () => this.termInputElement.focus();
-        this.clearEvent = () => this.onClearEvent();
+        this.clearEvent = (evt) => this.onClearEvent(evt);
         this.debouncedUpdateResults = debounce( () => this.updateResults(this.termInputElement.value), 300);
 
         this.resultsMouseOverEvent = (event) => this.onResultsElementMouseOver(event);
@@ -214,6 +216,7 @@ export class ElementController {
         this.rootElement.querySelector('.search-box-arrow-down').addEventListener('click', this.arrowFocusEvent);
         this.rootElement.querySelector('.search-box-clear').addEventListener('click', this.clearEvent);
         this.resultsElement.addEventListener('scroll', this.scrollEvent);
+        this.rootElement.querySelector('.search-box-term-input-container').addEventListener('click', this.focusInEvent);
     }
 
     private removeEvents(): void {
@@ -224,6 +227,7 @@ export class ElementController {
         this.rootElement.querySelector('.search-box-arrow-down').removeEventListener('click', this.arrowFocusEvent);
         this.rootElement.querySelector('.search-box-clear').removeEventListener('click', this.clearEvent);
         this.resultsElement.removeEventListener('scroll', this.scrollEvent);
+        this.rootElement.querySelector('.search-box-term-input-container').removeEventListener('click', this.focusInEvent);
     }
 
     public unbind(): void {
