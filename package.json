@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/mishavetl/search-box#readme",
   "dependencies": {
-    "lodash-es": "^4.17.15",
+    "lodash-es": "^4.17.21",
     "normalize-scss": "^7.0.1",
     "normalize.css": "^8.0.1",
     "axios": "^0.19.2",
